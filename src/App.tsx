@@ -51,7 +51,7 @@ const ChildWindowApp: React.FC<{ targetWindow: Window }> = ({
         );
 
         if (index === prev.length - 1) {
-          alert("you've reached the end!");
+          targetWindow.alert("you've reached the end!");
           return prev;
         }
 
@@ -75,7 +75,7 @@ const ChildWindowApp: React.FC<{ targetWindow: Window }> = ({
         );
 
         if (index === 0) {
-          alert("you've reached the start!");
+          targetWindow.alert("you've reached the start!");
           return prev;
         }
 
