@@ -71,7 +71,7 @@ const ChildWindowApp: React.FC<{ targetWindow: Window }> = ({
     if (e.key === "ArrowUp") {
       setItems((prev) => {
         const index = prev.findIndex(
-          (item) => item === document.activeElement?.textContent
+          (item) => item === targetWindow.document.activeElement?.textContent
         );
 
         if (index === 0) {
