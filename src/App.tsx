@@ -41,6 +41,8 @@ const ChildWindowApp: React.FC<{ targetWindow: Window }> = ({
     return Array.from({ length: 10 }, () => `Item ${counterRef.current++}`);
   });
 
+  const buttonRefs = React.useRef<(HTMLButtonElement | null)[]>([]);
+
   const onKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "ArrowDown") {
       setItems((prev) => {
@@ -57,6 +59,10 @@ const ChildWindowApp: React.FC<{ targetWindow: Window }> = ({
         const tmp = newState[index];
         newState[index] = newState[index + 1];
         newState[index + 1] = tmp;
+
+        setTimeout(() => {
+          buttonRefs.current[index + 1]?.focus();
+        }, 0);
 
         return newState;
       });
@@ -78,6 +84,10 @@ const ChildWindowApp: React.FC<{ targetWindow: Window }> = ({
         newState[index] = newState[index - 1];
         newState[index - 1] = tmp;
 
+        setTimeout(() => {
+          buttonRefs.current[index - 1]?.focus();
+        }, 0);
+
         return newState;
       });
     }
@@ -87,22 +97,23 @@ const ChildWindowApp: React.FC<{ targetWindow: Window }> = ({
     <>
       <h2>Sample repro app</h2>
       <p>
-        This app demonstrates a bug in child windows where focus is lost when elements
-        are reordered.
-
-        This example uses <strong>ArrowUp</strong> and <strong>ArrowDown</strong> keys to move the focused
-        item up and down.
+        This app demonstrates a bug in child windows where focus is lost when
+        elements are reordered. This example uses <strong>ArrowUp</strong> and{" "}
+        <strong>ArrowDown</strong> keys to move the focused item up and down.
       </p>
 
       <p>
-        When using the sample app in a child window you can see that focus is lost immediately after reordering.
+        When using the sample app in a child window you can see that focus is
+        lost immediately after reordering.
       </p>
       <div
         onKeyDown={onKeyDown}
         style={{ display: "flex", flexDirection: "column", gap: 10 }}
       >
-        {items.map((item) => (
-          <button key={item}>{item}</button>
+        {items.map((item, index) => (
+          <button ref={(elm) => buttonRefs.current[index] = elm} key={item}>
+            {item}
+          </button>
         ))}
       </div>
     </>
