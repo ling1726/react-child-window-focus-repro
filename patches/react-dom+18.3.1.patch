@@ -1,0 +1,47 @@
+diff --git a/node_modules/react-dom/cjs/react-dom.development.js b/node_modules/react-dom/cjs/react-dom.development.js
+index a11d72f..7937994 100644
+--- a/node_modules/react-dom/cjs/react-dom.development.js
++++ b/node_modules/react-dom/cjs/react-dom.development.js
+@@ -8438,9 +8438,12 @@ function isSameOriginFrame(iframe) {
+   }
+ }
+ 
+-function getActiveElementDeep() {
++function getActiveElementDeep(containerInfo) {
+   var win = window;
+-  var element = getActiveElement();
++  if (containerInfo?.ownerDocument.defaultView) {
++    win = containerInfo.ownerDocument.defaultView
++  }
++  var element = getActiveElement(win.document);
+ 
+   while (element instanceof win.HTMLIFrameElement) {
+     if (isSameOriginFrame(element)) {
+@@ -8472,8 +8475,8 @@ function hasSelectionCapabilities(elem) {
+   var nodeName = elem && elem.nodeName && elem.nodeName.toLowerCase();
+   return nodeName && (nodeName === 'input' && (elem.type === 'text' || elem.type === 'search' || elem.type === 'tel' || elem.type === 'url' || elem.type === 'password') || nodeName === 'textarea' || elem.contentEditable === 'true');
+ }
+-function getSelectionInformation() {
+-  var focusedElem = getActiveElementDeep();
++function getSelectionInformation(containerInfo) {
++  var focusedElem = getActiveElementDeep(containerInfo);
+   return {
+     focusedElem: focusedElem,
+     selectionRange: hasSelectionCapabilities(focusedElem) ? getSelection(focusedElem) : null
+@@ -10909,14 +10912,14 @@ function getPublicInstance(instance) {
+ }
+ function prepareForCommit(containerInfo) {
+   eventsEnabled = isEnabled();
+-  selectionInformation = getSelectionInformation();
++  selectionInformation = getSelectionInformation(containerInfo);
+   var activeInstance = null;
+ 
+   setEnabled(false);
+   return activeInstance;
+ }
+ function resetAfterCommit(containerInfo) {
+-  restoreSelection(selectionInformation);
++  restoreSelection(selectionInformation, containerInfo);
+   setEnabled(eventsEnabled);
+   eventsEnabled = null;
+   selectionInformation = null;
